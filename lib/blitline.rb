@@ -7,7 +7,7 @@ class Blitline
   require 'blitline/s3_destination'
   require 'blitline/http_poster'
   require 'net/http'
-  
+
   include AttributeJsonizer
   attr_accessor :jobs
 
@@ -60,7 +60,8 @@ class Blitline
      result = Blitline::HttpPoster.post("http://api.blitline.com/job", { :json => MultiJson.dump(@jobs)})
      json_result = MultiJson.load(result)
      raise "Error posting job: #{result.to_s}" if result["error"]
-     job_id = json_result["results"][0]["job_id"]
+     first_result = json_result["results"][0]
+     job_id = first_result["group_completion_job_id"] || first_result["job_id"]
      return poll_job(job_id)
   end
 
